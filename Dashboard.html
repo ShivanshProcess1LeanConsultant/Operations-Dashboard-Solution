@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Consultant Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root { --bg: #f0f2f5; --card: #ffffff; --primary: #1a73e8; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; padding: 20px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        
+        /* Dynamic Card Styling */
+        .card { background: var(--card); padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); transition: 0.3s; }
+        .card:hover { transform: translateY(-5px); }
+        .val { font-size: 2.2em; font-weight: bold; margin: 10px 0; }
+        .unit { font-size: 0.4em; color: #666; margin-left: 5px; }
+        
+        /* Status Colors */
+        .status-Good { border-top: 5px solid #28a745; }
+        .status-Warning { border-top: 5px solid #ffc107; }
+        .status-Danger { border-top: 5px solid #dc3545; }
+        
+        .upload-btn { background: var(--primary); color: white; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Global Operations Dashboard</h1>
+        <input type="file" id="csvFile" accept=".csv" style="display:none">
+        <button class="upload-btn" onclick="document.getElementById('csvFile').click()">🔌 Plug Data (CSV)</button>
+    </div>
+
+    <div id="dashboardGrid" class="grid">
+        </div>
+
+    <script>
+        document.getElementById('csvFile').addEventListener('change', function(e) {
+            const reader = new FileReader();
+            reader.onload = function() {
+                renderDashboard(reader.result);
+            };
+            reader.readAsText(e.target.files[0]);
+        });
+
+        function renderDashboard(csvData) {
+            const container = document.getElementById('dashboardGrid');
+            container.innerHTML = ''; // Clear existing
+            
+            const rows = csvData.split('\n').slice(1); // Skip headers
+
+            rows.forEach(row => {
+                const cols = row.split(',');
+                if (cols.length < 6) return;
+
+                const [name, value, unit, status, target, show] = cols;
+
+                // The "Plug and Play" Logic: Only show if TRUE
+                if (show.trim().toUpperCase() === 'TRUE') {
+                    const card = document.createElement('div');
+                    card.className = `card status-${status.trim()}`;
+                    card.innerHTML = `
+                        <div style="color: #666; text-transform: uppercase; font-size: 0.8em;">${name}</div>
+                        <div class="val">${value}<span class="unit">${unit}</span></div>
+                        <div style="font-size: 0.8em; color: #999;">Target: ${target}</div>
+                    `;
+                    container.appendChild(card);
+                }
+            });
+        }
+    </script>
+</body>
+</html>

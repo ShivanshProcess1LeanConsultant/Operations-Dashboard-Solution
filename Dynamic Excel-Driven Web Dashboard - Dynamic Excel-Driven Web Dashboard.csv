@@ -1,0 +1,5 @@
+Metric_Name,Value,Unit,Status,Target,Show_On_Web,Chart_Type
+OEE,12,%,Good,90,TRUE,Gauge
+Downtime,45,min,Warning,30,TRUE,Bar
+Scrap Rate,1.2,%,Good,2,TRUE,Line
+Secret Metric,500,USD,N/A,0,FALSE,None
